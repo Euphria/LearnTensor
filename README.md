@@ -12,7 +12,7 @@ This repository is used to save every piece of code during my learning about ten
 cd LearnTensor
 conda env create -f conda_env.yml
 ```
-或者一边运行等报错，一边进行一个python环境的构建
+或者一边运行等报错，一边进行一个python环境的构建（毕竟pytorch版本因机而异）
 
 # Run
 运行代码仅需要
@@ -24,4 +24,5 @@ python einsum.py
 
 # Other
 如果有tensor相关书籍推荐的话，欢迎推荐
+
 目前正在从西瓜书开始学起
