@@ -1,0 +1,18 @@
+# 数据地址
+data_path: "data/data_10_10_3.h5"
+batch_size: 32              # 批次大小
+
+model_params:
+  k_max: 3                  # Hermite 多项式的最大阶数
+  n_qubits: 3               # 量子比特数量
+#   
+# training_params:
+#   learning_rate: 0.01     # 学习率
+#   max_iter: 1000          # 最大迭代次数
+#   batch_size: 128         # 批次大小
+#   stiefel: true           # 是否开启 Stiefel 流形优化
+#   method: "sgdg"          # 优化方法
+#
+# save_params:
+#   output_dir: "./output"
+#   save_name: "model_cores.safetensors"
