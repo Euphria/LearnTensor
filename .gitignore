@@ -1,0 +1,8 @@
+# 运行结果
+assets/
+
+# python的运行信息
+__pycache__/
+
+# vscode的配置文件
+.vscode/
