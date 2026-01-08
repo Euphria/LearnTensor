@@ -138,12 +138,12 @@ def einsum(equation: str, tensors: list[torch.Tensor]):
 if __name__ == '__main__':
     A = torch.tensor([[1, 1], [0, 1]])
     B = torch.tensor([[0, 0], [0, 1]])
-    C = torch.tensor([[2, 1], [2, 1]])
-    tensors = [A, B, C]
-    equation = 'ij,jk,jl->ikl'
+    # C = torch.tensor([[2, 1], [2, 1]])
+    tensors = [A, B]
+    equation = 'ij,jk->ik'
     print(f"A:{A}\ndimensions: {A.size()}")
     print(f"\nB:{B}\ndimensions: {B.size()}")
-    print(f"\nC:{C}\ndimensions: {C.size()}")
+    # print(f"\nC:{C}\ndimensions: {C.size()}")
     print(f"\nEquation: {equation}")
     
     # 模块测试
@@ -169,3 +169,6 @@ if __name__ == '__main__':
     # if not torch.allclose(result, torch_result):
     #     print("错误：数据对齐失败，请检查 align_tensors 是否使用了 permute。")
 
+import torch
+# 核心校验：判断PyTorch是否支持CUDA（GPU）
+print("PyTorch是否支持GPU：", torch.cuda.is_available())
