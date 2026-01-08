@@ -1,17 +1,28 @@
 # 数据地址
-data_path: "data/data_10_10_3.h5"
+data_path: "./data/data_10_10_3.h5"
 batch_size: 32              # 批次大小
 
+backend_type: "pytorch"     # 量子计算后端类型，可选 "jax" 或 "pytorch"
+strategy_mode: "balanced"   # Siamese 引擎的策略模式, 可选 "fast"、 "balanced"、"full"
+
+# 模型参数
 model_params:
   k_max: 3                  # Hermite 多项式的最大阶数
   n_qubits: 3               # 量子比特数量
-#   
-# training_params:
-#   learning_rate: 0.01     # 学习率
-#   max_iter: 1000          # 最大迭代次数
-#   batch_size: 128         # 批次大小
-#   stiefel: true           # 是否开启 Stiefel 流形优化
-#   method: "sgdg"          # 优化方法
+
+# 训练参数
+training_params:
+  method: 'sgdg'            # 优化方法，可选 'sgdg' 或 'adam'
+  lr_rate: null             # 学习率
+  lr_schedule: [[0, 1e-5], [200, 0.5], [600, 1e-1], [800, 1e-1]]                       # 学习率调度
+  max_iter: 10            # 最大迭代次数
+  tol: 1e-6                 # 收敛容忍度
+  beta1: 0.9                # Adam 优化器的 beta1 参数
+  beta2: 0.999              # Adam 优化器的 beta2 参数
+  epsilon: 1e-8             # 防止除以零的小常数
+  momentum: 0.0             # SGDG 优化器的动量参数
+  stiefel: True             # 是否在 Stiefel 流形上进行优化
+
 #
 # save_params:
 #   output_dir: "./output"

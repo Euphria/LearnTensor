@@ -83,7 +83,7 @@ class QuantumHermitePreprocessor:
         # 构造返回字典 (为了适配后面 contract 的接口)
         result = {
             "measure_input_list": Mx_list, # 用于训练时的 contraction
-            "phi_x": out                   # 原始特征向量，可能用于调试
+            # "phi_x": out                   # 原始特征向量，可能用于调试
         }
         
         return result

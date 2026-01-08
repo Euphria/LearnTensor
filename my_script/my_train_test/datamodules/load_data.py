@@ -57,7 +57,7 @@ def load_data(data_path: str,
         # 结构：data_list[batch_idx]['measure_input_list'][qubit_idx] -> Tensor(batch_size, K, K)
         mx_shape = data_list[0]['measure_input_list'][0].shape
         last_mx_shape = data_list[-1]['measure_input_list'][0].shape
-        phi_shape = data_list[0]['phi_x'].shape
+        # phi_shape = data_list[0]['phi_x'].shape
         
         print(f"[Data] 预处理完成。")
         print(f"[Data] data_list 长度 (Batch 数量):  {len(data_list)}")
