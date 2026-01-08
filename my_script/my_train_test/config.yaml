@@ -14,8 +14,8 @@ model_params:
 training_params:
   method: 'sgdg'            # 优化方法，可选 'sgdg' 或 'adam'
   lr_rate: null             # 学习率
-  lr_schedule: [[0, 1e-5], [200, 0.5], [600, 1e-1], [800, 1e-1]]                       # 学习率调度
-  max_iter: 10            # 最大迭代次数
+  lr_schedule: [[0, 1e-2], [200, 5e-3], [600, 2e-3], [800, 1e-3]]                       # 学习率调度
+  max_iter: 1000            # 最大迭代次数
   tol: 1e-6                 # 收敛容忍度
   beta1: 0.9                # Adam 优化器的 beta1 参数
   beta2: 0.999              # Adam 优化器的 beta2 参数

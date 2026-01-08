@@ -5,6 +5,7 @@ import shutil
 from pathlib import Path
 from datetime import datetime
 import  time
+import argparse
 
 # 获取当前脚本的绝对路径
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -17,7 +18,7 @@ sys.path.append(parent_dir)
 from load_config import load_config
 from datamodules.load_data import load_data
 from circuit_states import generate_circuit_states_list
-import argparse
+from post_processing.fingure_loss import fingure_loss
 
 #  引入 TNEQ 模块
 from tneq_qc.core.engine_siamese import EngineSiamese
@@ -62,7 +63,7 @@ def main(device: str = 'cuda',
     torch.cuda.manual_seed(seed)
 
     #  日志初始化
-    log_path =  "tmp.log"
+    log_path =  "output.log"
     sys.stdout = Logger(str(log_path), sys.stdout)
     sys.stderr = Logger(str(log_path), sys.stderr)
 
@@ -163,6 +164,11 @@ def main(device: str = 'cuda',
     dataset_name = Path(config['data_path']).stem
     timestamp = datetime.now().strftime("%Y%m%d_%H%M")
     save_dir = Path(save_path) / dataset_name / timestamp
+
+    if save_dir.exists():
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")  # 添加秒数
+        save_dir = Path(save_path) / dataset_name / timestamp
+
     save_dir.mkdir(parents=True, exist_ok=True)
     
     print(f"[Save] 保存路径: {save_dir}")
@@ -189,7 +195,17 @@ def main(device: str = 'cuda',
     sys.stdout = sys.stdout.terminal
     sys.stderr = sys.stderr.terminal
     shutil.move(log_path, save_dir)
-    print(f"[Save] 终端输出已同步记录至：  {log_path}")
+    print(f"[Save] 终端输出已保存。")
+
+    ######################### 
+    # 7. 结果处理
+    ######################### 
+    print("\n" + "="*50)
+    print("结果处理...")
+    print("="*50)
+    
+    # 生成 Loss 曲线图
+    fingure_loss(save_dir, log_path)
     pass
 
 if __name__ == '__main__':
