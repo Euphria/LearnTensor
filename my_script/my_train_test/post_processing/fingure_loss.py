@@ -9,7 +9,7 @@ def fingure_loss(save_dir: Path,
     :param save_dir: 保存实验结果的目录 (pathlib.Path 或 str)
     :param log_path: 日志文件路径，默认为 "output.log"
     """
-    log_path = save_dir / log_path  # 匹配 train.py 中定义的 log_path 名
+    log_path = Path(log_path)  # 匹配 train.py 中定义的 log_path 名
     pdf_path = save_dir / "loss.pdf"
     
     if not log_path.exists():
@@ -22,7 +22,7 @@ def fingure_loss(save_dir: Path,
     # 读取日志内容
     with open(log_path, 'r', encoding='utf-8') as f:
         content = f.read()
-        
+
     # 正则表达式匹配 Iteration 和 loss 值 (兼容科学计数法)
     pattern = r"Iteration\s+(\d+):\s+loss\s+=\s+([+-]?\d*\.?\d+(?:[eE][+-]?\d+)?)"
     matches = re.findall(pattern, content)

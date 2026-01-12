@@ -16,9 +16,9 @@ sys.path.append(parent_dir)
 
 # 自己写的模块
 from load_config import load_config
-from datamodules.load_data import load_data
+from datamodules import load_data
 from circuit_states import generate_circuit_states_list
-from post_processing.fingure_loss import fingure_loss
+from post_processing import fingure_loss
 
 #  引入 TNEQ 模块
 from tneq_qc.core.engine_siamese import EngineSiamese
@@ -53,7 +53,7 @@ def main(device: str = 'cuda',
     # 6. 保存模型
     ######################### 
     parser = argparse.ArgumentParser(description="TNEQ Quantum Training Script")
-    parser.add_argument('--config', type=str, default='config.yaml', help='Path to the config file')
+    parser.add_argument('--config', type=str, default='./config/config.yaml', help='Path to the config file')
 
     args = parser.parse_args()
 
@@ -166,7 +166,7 @@ def main(device: str = 'cuda',
     save_dir = Path(save_path) / dataset_name / timestamp
 
     if save_dir.exists():
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")  # 添加秒数
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M_%S")  # 添加秒数
         save_dir = Path(save_path) / dataset_name / timestamp
 
     save_dir.mkdir(parents=True, exist_ok=True)
@@ -186,6 +186,24 @@ def main(device: str = 'cuda',
     })
     print(f"[Save] 模型已保存。")
 
+    ######################### 
+    # 7. 结果处理
+    ######################### 
+
+    # 写入日志文件
+    sys.stdout.log.flush()
+    sys.stderr.log.flush()
+
+    print("\n" + "="*50)
+    print("结果处理...")
+    print("="*50)
+    
+    # 生成 Loss 曲线图
+    try:
+        fingure_loss(save_dir, log_path)
+    except Exception as e:
+        print(f"[Post Error] 生成 Loss 曲线图时出错: {e}")
+
     # 保存日志
     # 关闭日志文件句柄
     sys.stdout.log.close()
@@ -195,17 +213,6 @@ def main(device: str = 'cuda',
     sys.stdout = sys.stdout.terminal
     sys.stderr = sys.stderr.terminal
     shutil.move(log_path, save_dir)
-    print(f"[Save] 终端输出已保存。")
-
-    ######################### 
-    # 7. 结果处理
-    ######################### 
-    print("\n" + "="*50)
-    print("结果处理...")
-    print("="*50)
-    
-    # 生成 Loss 曲线图
-    fingure_loss(save_dir, log_path)
     pass
 
 if __name__ == '__main__':
