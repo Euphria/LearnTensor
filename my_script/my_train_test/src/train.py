@@ -180,7 +180,7 @@ def main(device: str = 'cuda',
     # 保存模型
     cores_save_path = save_dir / "qctn_cores.safetensors"
     qctn.save_cores(str(cores_save_path), metadata={
-        "graph": "qctn_graph", 
+        "qctn_graph": qctn_graph, 
         "dataset": dataset_name,
         "timestamp": timestamp
     })
