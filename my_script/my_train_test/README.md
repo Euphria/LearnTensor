@@ -16,26 +16,26 @@ python .\src\train.py
 ## 项目结构
 
 ```
-LearnTensor/
-├── .gitignore
-├── config.yaml                 # 主配置文件
-├── README.md
-├── assets/                     # 训练结果存储目录
+tneq_train/
+├── .gitignore                  # Git 忽略文件配置 
+├── README.md                   # 项目说明文档
+├── config/                     # 配置文件目录
+│   └── config.yaml             # 主配置文件
 ├── data/                       # 数据集目录
-│   ├── create_data.py
-│   └── data_10_10_3.h5
+│   ├── create_data.py          # 数据生成脚本
+│   └── data_10_10_3.h5         # 训练数据文件
 ├── datamodules/                # 数据模块
-│   ├── data_preprocess.py
-│   ├── load_data.py
+│   ├── data_preprocess.py      # 数据预处理
+│   ├── load_data.py            # 数据加载逻辑
 │   └── __init__.py
 ├── post_processing/            # 后处理模块
-│   ├── fingure_loss.py
-│   ├── general.py
+│   ├── fingure_loss.py         # 损失函数可视化
+│   ├── sample.py               # 采样
 │   └── __init__.py
 └── src/                        # 源代码
-    ├── circuit_states.py
-    ├── load_config.py
-    ├── train.py
+    ├── circuit_states.py       # 电路状态处理
+    ├── load_config.py          # 配置加载工具
+    ├── train.py                # 核心训练逻辑
     └── __init__.py
 ```
 
