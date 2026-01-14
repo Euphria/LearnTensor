@@ -30,7 +30,7 @@ def load_data(data_path: str,
             raise ValueError(f"{data_path}中没有 train_data 键")
 
     print(f"[Data] 成功加载数据文件：\t{os.path.abspath(data_path)}") # 应该是 B * T * N
-    print(f"[Data] 数据形状（B * T * N）: \t{train_data.shape}")
+    print(f"[Data] 数据形状 (B * T * N) : \t{train_data.shape}")
 
     # 由（B, T, N）转换为 (B*T, N) 的形式以便后续处理
     total_trials = train_data.shape[0] * train_data.shape[1]

@@ -71,8 +71,20 @@ def run_sample(file_path, num_samples=10, device='cuda'):
     # sampled_indices 形状为 (num_samples, n_qubits)
     samples_np = sampled_indices.cpu().numpy()
     
+    # 计算最大样本ID宽度和数值宽度
+    max_sample_id_width = len(str(num_samples))
+    max_value_width = max(len(f"{val:.3f}") for sample in samples_np for val in sample)
+    
+    # 格式化输出
     for i, sample in enumerate(samples_np):
-        print(f"样本 {i+1}: 神经元状态组合 {sample}")
+        # 格式化每个数值，右对齐
+        formatted_values = [f"{val:>15.8f}" for val in sample]
+        
+        # 样本ID格式化
+        sample_id = f"{i+1:>{max_sample_id_width}}"
+        
+        # 输出行
+        print(f"样本 {sample_id}: 神经元状态 [{', '.join(formatted_values)}]")
     
     return samples_np
 
