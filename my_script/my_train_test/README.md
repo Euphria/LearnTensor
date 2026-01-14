@@ -35,13 +35,14 @@ tneq_train/
 └── src/                        # 源代码
     ├── circuit_states.py       # 电路状态处理
     ├── load_config.py          # 配置加载工具
-    ├── train.py                # 核心训练逻辑
-    └── __init__.py
+    └── train.py                # 核心训练逻辑
 ```
 
 ## 功能模块
 
-- **datamodules**: 数据加载和预处理
-- **post_processing**: 训练结果可视化和后处理
-- **src**: 核心训练逻辑和电路状态处理
-- **assets**: 存储训练过程中的模型权重、损失曲线等结果
+- **data**:             数据集
+- **config**:           配置文件
+- **datamodules**:      数据加载和预处理
+- **post_processing**:  训练结果可视化和后处理
+- **src**:              核心训练逻辑和电路状态处理
+- **assets**:           存储训练过程中的模型权重、损失曲线等结果

@@ -1,7 +1,7 @@
 from .fingure_loss import fingure_loss
-from .sample import run_sampling
+from .sample import run_sample
 
 __all__ = [
     'fingure_loss',
-    'run_sampling',
+    'run_sample',
 ]

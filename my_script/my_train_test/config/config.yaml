@@ -9,13 +9,21 @@ strategy_mode: "balanced"   # Siamese 引擎的策略模式, 可选 "fast"、 "b
 model_params:
   k_max: 3                  # Hermite 多项式的最大阶数
   n_qubits: 3               # 量子比特数量
+  qctn_graph: |-            # 量子电路拓扑结构
+    -3-A-3-
+    -3-A-3-
+    -3-A-3-
 
 # 训练参数
 training_params:
   method: 'sgdg'            # 优化方法，可选 'sgdg' 或 'adam'
   lr_rate: null             # 学习率
-  lr_schedule: [[0, 1e-2], [200, 5e-3], [600, 2e-3], [800, 1e-3]]                       # 学习率调度
-  max_iter: 100            # 最大迭代次数
+  lr_schedule: 
+    - [0, 1e-2]
+    - [20, 5e-3]
+    - [60, 2e-3] 
+    - [80, 1e-3]            # 学习率调度表，格式为 [迭代次数, 学习率]
+  max_iter: 100             # 最大迭代次数
   tol: 1e-6                 # 收敛容忍度
   beta1: 0.9                # Adam 优化器的 beta1 参数
   beta2: 0.999              # Adam 优化器的 beta2 参数
@@ -23,7 +31,12 @@ training_params:
   momentum: 0.0             # SGDG 优化器的动量参数
   stiefel: True             # 是否在 Stiefel 流形上进行优化
 
-#
+# 后处理参数
+post_processing_params:
+  plot_loss: True           # 是否绘制损失曲线图
+  sample: True              # 是否进行采样
+  num_samples: 10           # 采样数量
+
 # save_params:
 #   output_dir: "./output"
 #   save_name: "model_cores.safetensors"

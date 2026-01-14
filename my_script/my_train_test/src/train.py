@@ -18,7 +18,9 @@ sys.path.append(parent_dir)
 from load_config import load_config
 from datamodules import load_data
 from circuit_states import generate_circuit_states_list
-from post_processing import fingure_loss
+from post_processing import fingure_loss, run_sample
+
+
 
 #  引入 TNEQ 模块
 from tneq_qc.core.engine_siamese import EngineSiamese
@@ -43,7 +45,7 @@ class Logger(object):
 
 def main(device: str = 'cuda',
          save_path: str = './assets/') -> None:
-    ######################### 
+    ####################################################### 
     # 整理执行思路是：
     # 1. 加载配置文件
     # 2. 加载数据：数据预处理
@@ -51,7 +53,8 @@ def main(device: str = 'cuda',
     # 4. 设计量子电路
     # 5. 训练模型
     # 6. 保存模型
-    ######################### 
+    # 7. 保存日志
+    ####################################################### 
     parser = argparse.ArgumentParser(description="TNEQ Quantum Training Script")
     parser.add_argument('--config', type=str, default='./config/config.yaml', help='Path to the config file')
 
@@ -67,18 +70,18 @@ def main(device: str = 'cuda',
     sys.stdout = Logger(str(log_path), sys.stdout)
     sys.stderr = Logger(str(log_path), sys.stderr)
 
-    #########################  
+    #######################################################  
     # 1. 加载配置文件
-    #########################
+    #######################################################
     print("\n" + "="*50)
     print("加载配置文件...")
     print("="*50)
 
     config = load_config(args.config)
 
-    #########################  
+    #######################################################  
     # 2. 加载数据：数据预处理
-    #########################
+    #######################################################
     print("\n" + "="*50)
     print("加载数据...")
     print("="*50)
@@ -88,9 +91,9 @@ def main(device: str = 'cuda',
                            batch_size=config['batch_size'],
                            device=device)
 
-    #########################  
+    #######################################################  
     # 3. 初始化量子状态向量
-    #########################
+    #######################################################
     print("\n" + "="*50)
     print("初始化量子电路状态...")
     print("="*50)
@@ -101,23 +104,21 @@ def main(device: str = 'cuda',
                                                        K=config['model_params']['k_max'],
                                                        device=device)
 
-    ######################### 
+    ####################################################### 
     # 4. 设计量子电路
-    ######################### 
+    ####################################################### 
     print("\n" + "="*50)
     print("量子电路图")
     print("="*50)
 
-    qctn_graph = "-3-A-3-\n" \
-                "-3-A-3-\n" \
-                "-3-A-3-"
+    qctn_graph = config['model_params']['qctn_graph']
     qctn = QCTN(qctn_graph, backend=engine.backend)
     print("量子电路结构：")
     print(f'{qctn.graph}')
 
-    ######################### 
+    ####################################################### 
     # 5. 训练模型
-    ######################### 
+    ####################################################### 
     print("\n" + "="*50)
     print("训练模型...")
     print("="*50)
@@ -153,9 +154,9 @@ def main(device: str = 'cuda',
     print(f"Optimization Time: {toc - tic:.2f} seconds")
     print("训练完成。")
 
-    ######################### 
+    ####################################################### 
     # 6. 保存模型
-    ######################### 
+    ####################################################### 
     print("\n" + "="*50)
     print("保存模型...")
     print("="*50)
@@ -179,16 +180,24 @@ def main(device: str = 'cuda',
 
     # 保存模型
     cores_save_path = save_dir / "qctn_cores.safetensors"
-    qctn.save_cores(str(cores_save_path), metadata={
-        "qctn_graph": qctn_graph, 
-        "dataset": dataset_name,
-        "timestamp": timestamp
-    })
+    metadata_dict = {
+        "backend_type": config['backend_type'],
+        "strategy_mode":       config['strategy_mode'],
+        "qctn_graph":   qctn_graph, 
+        "n_qubits":     config['model_params']['n_qubits'],
+        "k_max":        config['model_params']['k_max'],
+        "dataset":      dataset_name,
+        "timestamp":    timestamp
+    }
+    qctn.save_cores(str(cores_save_path), metadata=metadata_dict)
+    print(f'\nmetadata keys:')
+    for key in metadata_dict:
+        print(f' - {key} ')
     print(f"[Save] 模型已保存。")
 
-    ######################### 
+    ####################################################### 
     # 7. 结果处理
-    ######################### 
+    ####################################################### 
 
     # 写入日志文件
     sys.stdout.log.flush()
@@ -199,12 +208,25 @@ def main(device: str = 'cuda',
     print("="*50)
     
     # 生成 Loss 曲线图
-    try:
-        fingure_loss(save_dir, log_path)
-    except Exception as e:
-        print(f"[Post Error] 生成 Loss 曲线图时出错: {e}")
+    if config['post_processing_params']['plot_loss']:
+        try:
+            fingure_loss(save_dir, log_path)
+        except Exception as e:
+            print(f"[Post Error] 生成 Loss 曲线图时出错: {e}")
+    
+    # 采样
+    if config['post_processing_params']['sample']:
+        print("\n开始采样...")
+        run_sample(file_path=cores_save_path, 
+                   num_samples=config['post_processing_params']['num_samples'], 
+                   device=device)
+        
+        print("\n采样完成。")
 
+    #######################################################
     # 保存日志
+    #######################################################
+    
     # 关闭日志文件句柄
     sys.stdout.log.close()
     sys.stderr.log.close()
