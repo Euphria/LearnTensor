@@ -13,9 +13,9 @@ def create_10x10x3_hdf5(file_path, ds_name, shape, min_val, max_val):
 # 主程序入口：定义参数 + 调用函数
 if __name__ == "__main__":
     # ===================== 在这里配置所有参数 =====================
-    SAVE_FILE_PATH = r"D:\GitStore\LearnTensor\my_script\my_train_test\data\data_10_10_3.h5"      # 输出h5文件路径
+    SAVE_FILE_PATH = r"D:\GitStore\LearnTensor\my_script\my_train_test\data\data_100_1_3.h5"      # 输出h5文件路径
     DATASET_NAME = "train_data"             # 数据集名称
-    DATA_SHAPE = (10, 10, 3)                # 核心维度10*10*3
+    DATA_SHAPE = (100, 1, 3)                # 核心维度10*10*3
     RAND_INT_MIN = 0                        # 随机整数最小值
     RAND_INT_MAX = 1                        # 随机整数最大值
     # ==============================================================

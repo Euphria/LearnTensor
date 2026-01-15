@@ -1,6 +1,6 @@
 # 数据地址
-data_path: "./data/data_10_10_3.h5"
-batch_size: 32              # 批次大小
+data_path: "./data/data_100_1_3.h5"
+batch_size: 64              # 批次大小
 
 backend_type: "pytorch"     # 量子计算后端类型，可选 "jax" 或 "pytorch"
 strategy_mode: "balanced"   # Siamese 引擎的策略模式, 可选 "fast"、 "balanced"、"full"
@@ -10,20 +10,20 @@ model_params:
   k_max: 3                  # Hermite 多项式的最大阶数
   n_qubits: 3               # 量子比特数量
   qctn_graph: |-            # 量子电路拓扑结构
-    -3-A-3-
-    -3-A-3-
-    -3-A-3-
+    -3-A-----3-C-3-
+    -3-A-3-B-----3-
+    -3-----B-3-C-3-
 
 # 训练参数
 training_params:
   method: 'sgdg'            # 优化方法，可选 'sgdg' 或 'adam'
   lr_rate: null             # 学习率
   lr_schedule: 
-    - [0, 1e-2]
-    - [20, 5e-3]
-    - [60, 2e-3] 
-    - [80, 1e-3]            # 学习率调度表，格式为 [迭代次数, 学习率]
-  max_iter: 100             # 最大迭代次数
+    - [0, 1e-1]
+    - [200, 5e-2]
+    - [600, 2e-2] 
+    - [800, 1e-2]            # 学习率调度表，格式为 [迭代次数, 学习率]
+  max_iter: 1000             # 最大迭代次数
   tol: 1e-6                 # 收敛容忍度
   beta1: 0.9                # Adam 优化器的 beta1 参数
   beta2: 0.999              # Adam 优化器的 beta2 参数
@@ -35,7 +35,7 @@ training_params:
 post_processing_params:
   plot_loss: True           # 是否绘制损失曲线图
   sample: True              # 是否进行采样
-  num_samples: 10           # 采样数量
+  num_samples: 100           # 采样数量
 
 # save_params:
 #   output_dir: "./output"

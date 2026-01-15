@@ -178,16 +178,20 @@ def main(device: str = 'cuda',
     shutil.copy(args.config, save_dir)
     print(f"[Save] 配置文件已保存。")
 
+    # 保存数据
+    shutil.copy(config['data_path'], save_dir)
+    print(f"[Save] 数据文件已保存。")
+
     # 保存模型
     cores_save_path = save_dir / "qctn_cores.safetensors"
     metadata_dict = {
-        "backend_type": config['backend_type'],
-        "strategy_mode":       config['strategy_mode'],
-        "qctn_graph":   qctn_graph, 
-        "n_qubits":     config['model_params']['n_qubits'],
-        "k_max":        config['model_params']['k_max'],
-        "dataset":      dataset_name,
-        "timestamp":    timestamp
+        "backend_type":     config['backend_type'],
+        "strategy_mode":    config['strategy_mode'],
+        "qctn_graph":       qctn_graph, 
+        "n_qubits":         config['model_params']['n_qubits'],
+        "k_max":            config['model_params']['k_max'],
+        "dataset":          dataset_name,
+        "timestamp":        timestamp
     }
     qctn.save_cores(str(cores_save_path), metadata=metadata_dict)
     print(f'\nmetadata keys:')
