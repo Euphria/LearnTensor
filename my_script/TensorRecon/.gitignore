@@ -1,0 +1,35 @@
+# 运行结果
+result/
+
+# 构建文件
+build/
+
+# python的运行信息
+__pycache__/
+
+# vscode的配置文件
+.vscode/
+
+# 临时文件
+*.pyc
+*.pyo
+*.pyd
+*.swp
+*.swo
+*.bak
+*.tmp
+*.log
+*.exe
+*.dll
+*.so
+*.o
+*.a
+*.obj
+*.d
+*.rbc
+*.manifest
+*.pid
+*.pdb
+*.gem
+*.egg-info
+*.egg
