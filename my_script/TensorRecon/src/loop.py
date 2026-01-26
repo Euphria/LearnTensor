@@ -22,7 +22,7 @@ def contract_for_decomposition_gradient(engine: Engine,
     if not hasattr(qctn, cache_key):
         # 这一步会自动分析 qctn 的拓扑，生成只把 Core 连起来的 einsum 公式
         einsum_eq, tensor_shapes = engine.contractor.build_core_only_expression(qctn)
-        
+        print(f"[Train] Compiled core-only expression: {einsum_eq}")
         # 编译优化后的表达式
         compute_fn = engine.contractor.create_contract_expression(einsum_eq, tensor_shapes)
         setattr(qctn, cache_key, compute_fn)
