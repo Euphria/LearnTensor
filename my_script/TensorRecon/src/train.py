@@ -72,76 +72,56 @@ def create_core_graph(n_cores: int,
     return graph_str
 # def create_core_graph(n_cores: int, bond_dim: int) -> str:
 #     """
-#     生成严格对齐的 MPS Graph。
-    
-#     逻辑：
-#     - Graph 总共有 n_cores + 1 行。
-#     - 每一行都完整遍历所有的 Core 位置和 Bond 位置。
-#     - 如果某个位置没有 Core 或 Bond，则用等长的 "-" 填充。
+#     生成标准的 MPS (Zipper结构) Graph。
+#     解决显存爆炸问题，确保 Core 之间有 Bond 连接。
 #     """
-#     if n_cores <= 0:
-#         return ""
+#     if n_cores <= 0: return ""
     
-#     # 1. 准备基础字符串组件
-#     core_names = [chr(ord('A') + i) for i in range(n_cores)]
+#     # 生成名字 A..Z..
+#     core_names = []
+#     for i in range(n_cores):
+#         if i < 26: core_names.append(chr(ord('A') + i))
+#         else: core_names.append(chr(ord('A') + (i // 26) - 1) + chr(ord('A') + (i % 26)))
+
+#     # 定义维度字符串
+#     # 物理腿 dim=2 (对应二进制像素), Bond腿 dim=bond_dim
+#     phy_str = "-2-" 
+#     bond_str = f"-{bond_dim}-"
     
-#     # 实体组件
-#     edge_bond_str = f"-{bond_dim}-"          # 比如 "-2-" (长度3)
-#     inner_bond_str = f"-{bond_dim}-"         # 比如 "-2-" (长度3)
-    
-#     # 空白组件 (长度必须严格匹配实体组件)
-#     empty_core_str = "-"                     # Core 占 1 位
-#     empty_bond_str = "-" * len(inner_bond_str) # Bond 占 3 位 (如果 bond_dim=2)
+#     # 占位符 (用于对齐)
+#     empty_phy = "-" * len(phy_str)
+#     empty_bond = "-" * len(bond_str)
+#     empty_name = "-"
 
 #     graph_lines = []
-
-#     # 2. 生成每一行 (总共 n_cores + 1 行)
-#     # Row 0: 只有 A
-#     # Row 1: A-B 连接
-#     # Row 2: B-C 连接
-#     # ...
-#     # Row N: 只有 最后一个 Core
     
-#     total_rows = n_cores + 1
+#     # 我们构建一个 "之" 字形或者简单的链式结构
+#     # 既然 opt_einsum 很聪明，我们只需要明确写出连接关系即可
+#     # 为了视觉清晰，我们生成如下结构:
+#     # Row 0: -2-A-2-            (Physical A)
+#     # Row 1:    -8-A-8-B-8-     (Bond A-B)
+#     # Row 2:       -2-B-2-      (Physical B)
+#     # Row 3:          -8-B-8-C- (Bond B-C)
     
-#     for row in range(total_rows):
-#         line_parts = [edge_bond_str] # 左边界
+#     for i in range(n_cores):
+#         # 1. 物理层 (Physical Line)
+#         # 缩进: 前面有 i 个 Bond 块的长度
+#         indent = (empty_bond + empty_name) * i
+#         line_phy = f"{indent}{phy_str}{core_names[i]}{phy_str}"
+#         graph_lines.append(line_phy)
         
-#         # 确定这一行哪些 Core 和 Bond 是“激活”的
-#         if row == 0:
-#             # 第一行：只显示第一个 Core
-#             active_cores = {0}
-#             active_bonds = set()
-#         elif row == total_rows - 1:
-#             # 最后一行：只显示最后一个 Core
-#             active_cores = {n_cores - 1}
-#             active_bonds = set()
-#         else:
-#             # 中间行 (Row k)：显示 Core[k-1] 和 Core[k]，以及它们中间的 Bond[k-1]
-#             # 例如 Row 1: 显示 Core 0, Core 1, Bond 0
-#             active_cores = {row - 1, row}
-#             active_bonds = {row - 1}
-
-#         # 3. 构建这一行的列 (遍历所有 Core 和 Core 之间的空隙)
-#         for col in range(n_cores):
-#             # --- 放置 Core ---
-#             if col in active_cores:
-#                 line_parts.append(core_names[col])
-#             else:
-#                 line_parts.append(empty_core_str)
-            
-#             # --- 放置 Core 之间的连接符 (除了最后一个 Core 后面) ---
-#             if col < n_cores - 1:
-#                 if col in active_bonds:
-#                     line_parts.append(inner_bond_str)
-#                 else:
-#                     line_parts.append(empty_bond_str)
-        
-#         line_parts.append(edge_bond_str) # 右边界
-#         graph_lines.append("".join(line_parts))
+#         # 2. 连接层 (Bond Line) - 最后一个 Core 后面不需要 Bond
+#         if i < n_cores - 1:
+#             # 缩进: 前面有 i 个 Bond 块 + 半个偏移? 
+#             # 其实只要这行写了 A 和 B，opt_einsum 就能认出来。对齐只是为了好看。
+#             # 我们简单地把 A 和 B 连起来
+#             indent_bond = (empty_bond + empty_name) * i
+#             # 格式: -8-A-8-B-
+#             line_bond = f"{indent_bond}   {bond_str}{core_names[i]}{bond_str}{core_names[i+1]}"
+#             graph_lines.append(line_bond)
 
 #     graph_str = "\n".join(graph_lines)
-#     print(f"\n[Graph] Generated MPS graph ({n_cores} cores):")
+#     print(f"\n[Graph] Generated MPS Graph (Zipper Chain):")
 #     print(graph_str)
 #     return graph_str
 
@@ -218,9 +198,13 @@ def main(device: str = 'cuda') -> None:
     print("\n" + "="*50)
     print("初始化core graph...")
     print("="*50)
-
-    qctn_graph = create_core_graph(config['model_params']['n_cores'], 
+    
+    if config['model_params'].get('auto_graph', True):
+        qctn_graph = create_core_graph(config['model_params']['n_cores'], 
                                    config['model_params']['BOND_DIM'])
+    else:
+        qctn_graph = config['model_params']['qctn_graph']
+        
     qctn = QCTN(qctn_graph, backend=engine.backend)
 
     ####################################################### 
